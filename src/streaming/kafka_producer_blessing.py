@@ -244,7 +244,7 @@ def get_message_key(message: dict[str, Any]) -> str:
     keeping them in order.
     """
     try:
-        return str(message["region_id"])
+        return str(message["product_id"])
     except KeyError as error:
         msg = missing_csv_field_message(
             field="region_id",
@@ -354,16 +354,18 @@ def send_messages(
             key = get_message_key(message)
             LOG.info(f"  Sending message with key={key}")
 
-            produce_kafka_message(
-                producer=producer,
-                topic=settings.topic,
-                key=key,
-                message=message,
-            )
+        LOG.info(f"Product={message['product_id']} Price={message['unit_price']}")
 
-            sent_count += 1
-            LOG.info(f"  MESSAGE SENT  sent={sent_count}")
-            time.sleep(MESSAGE_INTERVAL_SECONDS)
+        produce_kafka_message(
+            producer=producer,
+            topic=settings.topic,
+            key=key,
+            message=message,
+        )
+
+        sent_count += 1
+        LOG.info(f"  MESSAGE SENT  sent={sent_count}")
+        time.sleep(MESSAGE_INTERVAL_SECONDS)
 
     # except if we can't process messages
     # due to missing files, validation problems, or Kafka errors,

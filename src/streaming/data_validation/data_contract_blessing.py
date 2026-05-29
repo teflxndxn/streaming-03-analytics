@@ -227,6 +227,13 @@ def validate_sale_record(
 
     errors.extend(validate_positive_integer(record["quantity"]))
 
+    try:
+        unit_price = float(record["unit_price"])
+        if unit_price <= 0:
+            errors.append(f"Invalid unit_price: {unit_price}")
+    except ValueError:
+        errors.append(f"Unit price must be numeric: {record['unit_price']!r}")
+
     errors.extend(validate_boolean_text(record["is_online"], field_name="is_online"))
 
     errors.extend(
